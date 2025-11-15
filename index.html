@@ -99,23 +99,141 @@
       border-radius: 999px;
       padding: 0.4rem 0.75rem;
       border: 1px solid #ffffff20;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
     }
 
-    .sort-select {
-      background-color: #0b0e1e;
-      color: #f8f9fa;
+    /* Custom dropdown */
+    .sort-dropdown {
+      position: relative;
+      min-width: 180px;
+    }
+
+    .sort-dropdown-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      width: 100%;
       border-radius: 999px;
       border: 1px solid #495057;
-      padding-inline: 0.75rem;
+      background: #0b0e1e;
+      color: #f8f9fa;
+      padding: 0.25rem 0.75rem;
       font-size: 0.8rem;
-      min-width: 150px;
+      cursor: pointer;
     }
 
-    .sort-select:focus {
+    .sort-dropdown-toggle:focus {
+      outline: none;
       box-shadow: 0 0 0 0.1rem rgba(13, 110, 253, 0.4);
       border-color: #0d6efd;
-      outline: none;
     }
+
+    .sort-dropdown-label-main {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      overflow: hidden;
+    }
+
+    .sort-label-prefix {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #adb5bd;
+    }
+
+    #sort-current-label {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      font-size: 0.8rem;
+    }
+
+    .sort-chevron {
+      font-size: 0.75rem;
+      opacity: 0.8;
+      transform-origin: center;
+      transition: transform 0.12s ease-out, opacity 0.12s;
+    }
+
+    .sort-dropdown.open .sort-chevron {
+      transform: rotate(180deg);
+      opacity: 1;
+    }
+
+    .sort-dropdown-menu {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 0.25rem);
+      min-width: 200px;
+      background: #050713f5;
+      border-radius: 0.75rem;
+      border: 1px solid #ffffff30;
+      box-shadow: 0 18px 30px rgba(0,0,0,0.7);
+      padding: 0.35rem 0;
+      z-index: 20;
+      display: none;
+      backdrop-filter: blur(12px);
+    }
+
+    .sort-dropdown.open .sort-dropdown-menu {
+      display: block;
+    }
+
+    .sort-option {
+      width: 100%;
+      background: transparent;
+      border: 0;
+      color: #f8f9fa;
+      padding: 0.35rem 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .sort-option:hover {
+      background: #ffffff10;
+    }
+
+    .sort-option.active {
+      background: #0d6efd33;
+    }
+
+    .sort-option-label-main {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sort-option-title {
+      font-weight: 500;
+    }
+
+    .sort-option-sub {
+      font-size: 0.7rem;
+      color: #adb5bd;
+    }
+
+    .color-dot {
+      width: 0.8rem;
+      height: 0.8rem;
+      border-radius: 999px;
+      flex-shrink: 0;
+      border: 1px solid #00000066;
+    }
+
+    .color-dot.default { background: #adb5bd; }
+    .color-dot.a       { background: #dc3545; }  /* red */
+    .color-dot.b       { background: #ffc107; }  /* yellow */
+    .color-dot.d       { background: #0dcaf0; }  /* light blue */
+    .color-dot.f       { background: #198754; }  /* light green */
+    .color-dot.k       { background: #f8f9fa; border-color: #adb5bd; }  /* off white */
 
     .sort-toggle .btn {
       font-size: 0.75rem;
@@ -183,18 +301,60 @@
       <span id="query-label" class="text-secondary"></span>
     </div>
 
-    <div class="d-flex align-items-center gap-2 flex-wrap justify-content-md-end sort-wrapper">
-      <div class="d-flex align-items-center gap-2">
-        <span class="caps" style="font-size: 0.7rem;">Sort</span>
-        <select id="sort-select" class="sort-select form-select form-select-sm">
-          <!-- "" means "default", which is A→Z by name -->
-          <option value="">Default (A → Z)</option>
-          <option value="k">K</option>
-          <option value="a">A</option>
-          <option value="b">B</option>
-          <option value="d">D</option>
-          <option value="f">F</option>
-        </select>
+    <div class="sort-wrapper">
+      <!-- Custom dropdown -->
+      <div class="sort-dropdown" id="sort-dropdown">
+        <button type="button" class="sort-dropdown-toggle" id="sort-dropdown-toggle">
+          <div class="sort-dropdown-label-main">
+            <span class="sort-label-prefix">Sort</span>
+            <span id="sort-current-label">Default (A → Z)</span>
+          </div>
+          <span class="sort-chevron">▾</span>
+        </button>
+        <div class="sort-dropdown-menu" id="sort-menu">
+          <button class="sort-option active" data-key="name" data-label="Default (A → Z)">
+            <span class="color-dot default"></span>
+            <span class="sort-option-label-main">
+              <span class="sort-option-title">Default (A → Z)</span>
+              <span class="sort-option-sub">Name alphabetically</span>
+            </span>
+          </button>
+          <button class="sort-option" data-key="k" data-label="K">
+            <span class="color-dot k"></span>
+            <span class="sort-option-label-main">
+              <span class="sort-option-title">K</span>
+              <span class="sort-option-sub">K stat</span>
+            </span>
+          </button>
+          <button class="sort-option" data-key="a" data-label="A">
+            <span class="color-dot a"></span>
+            <span class="sort-option-label-main">
+              <span class="sort-option-title">A</span>
+              <span class="sort-option-sub">A stat</span>
+            </span>
+          </button>
+          <button class="sort-option" data-key="b" data-label="B">
+            <span class="color-dot b"></span>
+            <span class="sort-option-label-main">
+              <span class="sort-option-title">B</span>
+              <span class="sort-option-sub">B stat</span>
+            </span>
+          </button>
+          <button class="sort-option" data-key="d" data-label="D">
+            <span class="color-dot d"></span>
+            <span class="sort-option-label-main">
+              <span class="sort-option-title">D</span>
+              <span class="sort-option-sub">D stat</span>
+            </span>
+          </button>
+          <button class="sort-option" data-key="f" data-label="F">
+            <span class="color-dot f"></span>
+            <span class="sort-option-label-main">
+              <span class="sort-option-title">F</span>
+              <span class="sort-option-sub">F stat</span>
+            </span>
+          </button>
+        </div>
       </div>
 
       <div class="btn-group sort-toggle" role="group" aria-label="Sort direction">
@@ -229,9 +389,13 @@
   const resultCountEl = document.getElementById('result-count');
   const queryLabelEl  = document.getElementById('query-label');
   const quickPicksEl  = document.getElementById('quick-picks');
-  const sortSelect    = document.getElementById('sort-select');
-  const sortDirDesc   = document.getElementById('sort-dir-desc');
-  const sortDirAsc    = document.getElementById('sort-dir-asc');
+
+  const sortDropdown      = document.getElementById('sort-dropdown');
+  const sortDropdownToggle= document.getElementById('sort-dropdown-toggle');
+  const sortMenu          = document.getElementById('sort-menu');
+  const sortCurrentLabel  = document.getElementById('sort-current-label');
+  const sortDirDesc       = document.getElementById('sort-dir-desc');
+  const sortDirAsc        = document.getElementById('sort-dir-asc');
 
   // Default: sort by name A → Z
   let currentSortKey = 'name';
@@ -475,16 +639,44 @@
     renderResults(sorted, qraw.trim());
   }
 
-  // --- event wiring ---
-  searchInput.addEventListener('input', updateResults);
+  // --- dropdown events ---
+  sortDropdownToggle.addEventListener('click', () => {
+    const isOpen = sortDropdown.classList.contains('open');
+    if (isOpen) {
+      sortDropdown.classList.remove('open');
+    } else {
+      sortDropdown.classList.add('open');
+    }
+  });
 
-  sortSelect.addEventListener('change', () => {
-    const val = sortSelect.value;
-    // "" means "default" → keep name sort
-    currentSortKey = val || 'name';
+  // Handle option clicks
+  sortMenu.addEventListener('click', (ev) => {
+    const btn = ev.target.closest('.sort-option');
+    if (!btn) return;
+
+    const key = btn.getAttribute('data-key') || 'name';
+    const label = btn.getAttribute('data-label') || 'Default (A → Z)';
+
+    currentSortKey = key;
+    sortCurrentLabel.textContent = label;
+
+    // Update active state
+    sortMenu.querySelectorAll('.sort-option').forEach(opt => {
+      opt.classList.toggle('active', opt === btn);
+    });
+
+    sortDropdown.classList.remove('open');
     updateResults();
   });
 
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (ev) => {
+    if (!sortDropdown.contains(ev.target)) {
+      sortDropdown.classList.remove('open');
+    }
+  });
+
+  // Direction buttons
   sortDirDesc.addEventListener('click', () => {
     currentSortDir = 'desc';
     sortDirDesc.classList.add('active');
@@ -498,6 +690,9 @@
     sortDirDesc.classList.remove('active');
     updateResults();
   });
+
+  // Search + quick picks
+  searchInput.addEventListener('input', updateResults);
 
   if (quickPicksEl) {
     quickPicksEl.addEventListener('click', (ev) => {
