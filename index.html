@@ -5,7 +5,6 @@
   <title>Immortal's – Drink Search</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Bootstrap for layout / base styles -->
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
     rel="stylesheet"
@@ -50,7 +49,9 @@
       color: #adb5bd;
     }
 
-    .badge-pill { border-radius: 999px; }
+    .badge-pill {
+      border-radius: 999px;
+    }
 
     .stat-pill {
       min-width: 2.3rem;
@@ -60,13 +61,12 @@
       padding: 0.25rem 0.6rem;
     }
 
-    /* Color-coded stat pills */
-    .pill-a { background-color: #dc3545; color: #ffffff; }   /* red */
-    .pill-b { background-color: #ffc107; color: #212529; }   /* yellow */
-    .pill-d { background-color: #0dcaf0; color: #212529; }   /* light blue */
-    .pill-f { background-color: #198754; color: #ffffff; }   /* light green */
+    .pill-a { background-color: #dc3545; color: #ffffff; }
+    .pill-b { background-color: #ffc107; color: #212529; }
+    .pill-d { background-color: #0dcaf0; color: #212529; }
+    .pill-f { background-color: #198754; color: #ffffff; }
     .pill-k {
-      background-color: #f8f9fa;   /* off white */
+      background-color: #f8f9fa;
       color: #212529;
       border: 1px solid #ffffff55;
     }
@@ -91,9 +91,10 @@
       color: #adb5bd;
     }
 
-    a.badge:hover { filter: brightness(1.1); }
+    a.badge:hover {
+      filter: brightness(1.1);
+    }
 
-    /* Sort UI styling */
     .sort-wrapper {
       background: #050711b3;
       border-radius: 999px;
@@ -105,7 +106,6 @@
       flex-wrap: wrap;
     }
 
-    /* Custom dropdown */
     .sort-dropdown {
       position: relative;
       min-width: 180px;
@@ -229,11 +229,14 @@
     }
 
     .color-dot.default { background: #adb5bd; }
-    .color-dot.a       { background: #dc3545; }  /* red */
-    .color-dot.b       { background: #ffc107; }  /* yellow */
-    .color-dot.d       { background: #0dcaf0; }  /* light blue */
-    .color-dot.f       { background: #198754; }  /* light green */
-    .color-dot.k       { background: #f8f9fa; border-color: #adb5bd; }  /* off white */
+    .color-dot.a       { background: #dc3545; }
+    .color-dot.b       { background: #ffc107; }
+    .color-dot.d       { background: #0dcaf0; }
+    .color-dot.f       { background: #198754; }
+    .color-dot.k       {
+      background: #f8f9fa;
+      border-color: #adb5bd;
+    }
 
     .sort-toggle .btn {
       font-size: 0.75rem;
@@ -302,7 +305,6 @@
     </div>
 
     <div class="sort-wrapper">
-      <!-- Custom dropdown -->
       <div class="sort-dropdown" id="sort-dropdown">
         <button type="button" class="sort-dropdown-toggle" id="sort-dropdown-toggle">
           <div class="sort-dropdown-label-main">
@@ -358,7 +360,6 @@
       </div>
 
       <div class="btn-group sort-toggle" role="group" aria-label="Sort direction">
-        <!-- Default: low→high so names are A→Z -->
         <button type="button" class="btn btn-sm" data-dir="desc" id="sort-dir-desc">High → Low</button>
         <button type="button" class="btn btn-sm active" data-dir="asc" id="sort-dir-asc">Low → High</button>
       </div>
@@ -369,9 +370,7 @@
 
   <div class="mb-3">
     <div class="caps mb-2">Quick picks</div>
-    <div class="d-flex flex-wrap gap-2" id="quick-picks">
-      <!-- Filled by JS -->
-    </div>
+    <div class="d-flex flex-wrap gap-2" id="quick-picks"></div>
   </div>
 
   <div id="results" class="row g-3"></div>
@@ -390,16 +389,15 @@
   const queryLabelEl  = document.getElementById('query-label');
   const quickPicksEl  = document.getElementById('quick-picks');
 
-  const sortDropdown      = document.getElementById('sort-dropdown');
-  const sortDropdownToggle= document.getElementById('sort-dropdown-toggle');
-  const sortMenu          = document.getElementById('sort-menu');
-  const sortCurrentLabel  = document.getElementById('sort-current-label');
-  const sortDirDesc       = document.getElementById('sort-dir-desc');
-  const sortDirAsc        = document.getElementById('sort-dir-asc');
+  const sortDropdown       = document.getElementById('sort-dropdown');
+  const sortDropdownToggle = document.getElementById('sort-dropdown-toggle');
+  const sortMenu           = document.getElementById('sort-menu');
+  const sortCurrentLabel   = document.getElementById('sort-current-label');
+  const sortDirDesc        = document.getElementById('sort-dir-desc');
+  const sortDirAsc         = document.getElementById('sort-dir-asc');
 
-  // Default: sort by name A → Z
   let currentSortKey = 'name';
-  let currentSortDir = 'asc'; // 'asc' or 'desc'
+  let currentSortDir = 'asc';
 
   function normalizeFlagWithOpt(v) {
     if (typeof v === 'string') {
@@ -435,12 +433,10 @@
     }));
   }
 
-  // --- matching: HH should match H.H hangover ---
   function matchesQuery(drink, q) {
     if (!q) return true;
 
     const query = q.toLowerCase();
-
     const rawName = (drink.name || '').toLowerCase();
     const simple = rawName.replace(/[^a-z0-9]+/g, ' ').trim();
     const compact = simple.replace(/\s+/g, '');
@@ -448,14 +444,13 @@
     const initials = tokens.map(t => t[0]).join('');
 
     return (
-      rawName.includes(query)   ||
-      simple.includes(query)    ||
-      compact.includes(query)   ||
+      rawName.includes(query) ||
+      simple.includes(query)  ||
+      compact.includes(query) ||
       initials.includes(query)
     );
   }
 
-  // --- sorting helpers ---
   function getNumStat(d, key) {
     const v = d[key];
     if (v === null || v === undefined || v === '') return -Infinity;
@@ -465,7 +460,7 @@
 
   function getKValue(d) {
     const raw = (d.k ?? '').toString();
-    const m = raw.match(/\^?(\d+)/); // "^19" => "19"
+    const m = raw.match(/\^?(\d+)/);
     if (!m) return -Infinity;
     const n = Number(m[1]);
     return Number.isFinite(n) ? n : -Infinity;
@@ -639,7 +634,6 @@
     renderResults(sorted, qraw.trim());
   }
 
-  // --- dropdown events ---
   sortDropdownToggle.addEventListener('click', () => {
     const isOpen = sortDropdown.classList.contains('open');
     if (isOpen) {
@@ -649,7 +643,6 @@
     }
   });
 
-  // Handle option clicks
   sortMenu.addEventListener('click', (ev) => {
     const btn = ev.target.closest('.sort-option');
     if (!btn) return;
@@ -660,7 +653,6 @@
     currentSortKey = key;
     sortCurrentLabel.textContent = label;
 
-    // Update active state
     sortMenu.querySelectorAll('.sort-option').forEach(opt => {
       opt.classList.toggle('active', opt === btn);
     });
@@ -669,14 +661,12 @@
     updateResults();
   });
 
-  // Close dropdown when clicking outside
   document.addEventListener('click', (ev) => {
     if (!sortDropdown.contains(ev.target)) {
       sortDropdown.classList.remove('open');
     }
   });
 
-  // Direction buttons
   sortDirDesc.addEventListener('click', () => {
     currentSortDir = 'desc';
     sortDirDesc.classList.add('active');
@@ -691,7 +681,6 @@
     updateResults();
   });
 
-  // Search + quick picks
   searchInput.addEventListener('input', updateResults);
 
   if (quickPicksEl) {
@@ -706,7 +695,6 @@
     });
   }
 
-  // Load drinks.json, normalize, then render
   fetch('drinks.json')
     .then(resp => {
       if (!resp.ok) throw new Error('Failed to load drinks.json');
@@ -715,7 +703,7 @@
     .then(data => {
       DRINKS = normalizeDrinks(data);
       renderQuickPicks(DRINKS);
-      updateResults(); // initial render: A→Z
+      updateResults();
     })
     .catch(err => {
       console.error(err);
