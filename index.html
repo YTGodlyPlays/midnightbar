@@ -108,7 +108,7 @@
 
     .sort-dropdown {
       position: relative;
-      min-width: 180px;
+      min-width: 200px;
     }
 
     .sort-dropdown-toggle {
@@ -229,27 +229,32 @@
       border-color: #adb5bd;
     }
 
+    .sort-toggle {
+      display: inline-flex;
+      align-items: center;
+      background: #0b0e1e;
+      border-radius: 999px;
+      border: 1px solid #495057;
+      padding: 0.15rem;
+    }
+
     .sort-toggle .btn {
       font-size: 0.75rem;
-      padding: 0.25rem 0.6rem;
+      padding: 0.2rem 0.7rem;
       border-radius: 999px;
-      border-width: 1px;
+      border: 0;
+      background: transparent;
+      color: #ced4da;
+      box-shadow: none;
     }
 
     .sort-toggle .btn.active {
       background-color: #0d6efd;
       color: #f8f9fa;
-      border-color: #0d6efd;
-    }
-
-    .sort-toggle .btn:not(.active) {
-      background-color: transparent;
-      color: #ced4da;
-      border-color: #495057;
     }
 
     .sort-toggle .btn:not(.active):hover {
-      border-color: #adb5bd;
+      background-color: #ffffff10;
       color: #f8f9fa;
     }
 
@@ -319,35 +324,35 @@
             <span class="color-dot k"></span>
             <span class="sort-option-label-main">
               <span class="sort-option-title">K</span>
-              <span class="sort-option-sub">K = Karmotrine</span>
+              <span class="sort-option-sub">Karmotrine</span>
             </span>
           </button>
           <button class="sort-option" data-key="a">
             <span class="color-dot a"></span>
             <span class="sort-option-label-main">
               <span class="sort-option-title">A</span>
-              <span class="sort-option-sub">A = Adelhype</span>
+              <span class="sort-option-sub">Adelhype</span>
             </span>
           </button>
           <button class="sort-option" data-key="b">
             <span class="color-dot b"></span>
             <span class="sort-option-label-main">
               <span class="sort-option-title">B</span>
-              <span class="sort-option-sub">B = Bronson Ext</span>
+              <span class="sort-option-sub">Bronson Ext</span>
             </span>
           </button>
           <button class="sort-option" data-key="d">
             <span class="color-dot d"></span>
             <span class="sort-option-label-main">
               <span class="sort-option-title">D</span>
-              <span class="sort-option-sub">D = Pwd Delta</span>
+              <span class="sort-option-sub">Pwd Delta</span>
             </span>
           </button>
           <button class="sort-option" data-key="f">
             <span class="color-dot f"></span>
             <span class="sort-option-label-main">
               <span class="sort-option-title">F</span>
-              <span class="sort-option-sub">F = Flanergide</span>
+              <span class="sort-option-sub">Flanergide</span>
             </span>
           </button>
         </div>
@@ -549,7 +554,6 @@
       .replace(/'/g, "&#039;");
   }
 
-
   function renderQuickPicks(list) {
     quickPicksEl.innerHTML = '';
     const max = Math.min(10, list.length);
@@ -656,7 +660,7 @@
 
           <div class="mb-2">
             <div class="stat-label mb-1">Flags</div>
-            <div class="d-flex flex-wrap gap-1">
+            <div class="flex-wrap d-flex gap-1">
               ${noFlags ? '<span class="text-secondary small">No extra flags set for this entry.</span>' : flagsHtml}
             </div>
           </div>
