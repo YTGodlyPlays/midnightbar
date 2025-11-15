@@ -92,6 +92,61 @@
     }
 
     a.badge:hover { filter: brightness(1.1); }
+
+    /* Sort UI styling */
+    .sort-wrapper {
+      background: #050711b3;
+      border-radius: 999px;
+      padding: 0.4rem 0.75rem;
+      border: 1px solid #ffffff20;
+    }
+
+    .sort-select {
+      background-color: #0b0e1e;
+      color: #f8f9fa;
+      border-radius: 999px;
+      border: 1px solid #495057;
+      padding-inline: 0.75rem;
+      font-size: 0.8rem;
+      min-width: 145px;
+    }
+
+    .sort-select:focus {
+      box-shadow: 0 0 0 0.1rem rgba(13, 110, 253, 0.4);
+      border-color: #0d6efd;
+      outline: none;
+    }
+
+    .sort-toggle .btn {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      border-width: 1px;
+    }
+
+    .sort-toggle .btn.active {
+      background-color: #0d6efd;
+      color: #f8f9fa;
+      border-color: #0d6efd;
+    }
+
+    .sort-toggle .btn:not(.active) {
+      background-color: transparent;
+      color: #ced4da;
+      border-color: #495057;
+    }
+
+    .sort-toggle .btn:not(.active):hover {
+      border-color: #adb5bd;
+      color: #f8f9fa;
+    }
+
+    @media (max-width: 576px) {
+      .sort-wrapper {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
   </style>
 </head>
 <body>
@@ -127,17 +182,26 @@
       Results
       <span id="query-label" class="text-secondary"></span>
     </div>
-    <div class="d-flex align-items-center gap-2 flex-wrap justify-content-md-end">
-      <label for="sort-select" class="caps mb-0" style="font-size: 0.7rem;">Sort by</label>
-      <select id="sort-select" class="form-select form-select-sm bg-dark text-light border-secondary" style="width:auto;">
-        <option value="name">Name (A → Z)</option>
-        <option value="k">K (high → low)</option>
-        <option value="a">A (high → low)</option>
-        <option value="b">B (high → low)</option>
-        <option value="d">D (high → low)</option>
-        <option value="f">F (high → low)</option>
-      </select>
-      <div class="result-count" id="result-count"></div>
+
+    <div class="d-flex align-items-center gap-2 flex-wrap justify-content-md-end sort-wrapper">
+      <div class="d-flex align-items-center gap-2">
+        <span class="caps" style="font-size: 0.7rem;">Sort by</span>
+        <select id="sort-select" class="sort-select form-select form-select-sm">
+          <option value="name">Name (A → Z)</option>
+          <option value="k">K</option>
+          <option value="a">A</option>
+          <option value="b">B</option>
+          <option value="d">D</option>
+          <option value="f">F</option>
+        </select>
+      </div>
+
+      <div class="btn-group sort-toggle" role="group" aria-label="Sort direction">
+        <button type="button" class="btn btn-sm active" data-dir="desc" id="sort-dir-desc">High → Low</button>
+        <button type="button" class="btn btn-sm" data-dir="asc" id="sort-dir-asc">Low → High</button>
+      </div>
+
+      <div class="result-count ms-md-1 mt-1 mt-md-0" id="result-count"></div>
     </div>
   </div>
 
@@ -164,8 +228,11 @@
   const queryLabelEl  = document.getElementById('query-label');
   const quickPicksEl  = document.getElementById('quick-picks');
   const sortSelect    = document.getElementById('sort-select');
+  const sortDirDesc   = document.getElementById('sort-dir-desc');
+  const sortDirAsc    = document.getElementById('sort-dir-asc');
 
-  let currentSort = 'name';
+  let currentSortKey = 'name';
+  let currentSortDir = 'desc'; // 'asc' or 'desc'
 
   function normalizeFlagWithOpt(v) {
     if (typeof v === 'string') {
@@ -239,25 +306,31 @@
 
   function sortDrinks(list) {
     const arr = [...list];
-    switch (currentSort) {
+    const dir = currentSortDir === 'asc' ? 1 : -1;
+
+    switch (currentSortKey) {
       case 'a':
-        arr.sort((x, y) => getNumStat(y, 'a') - getNumStat(x, 'a'));
+        arr.sort((x, y) => dir * (getNumStat(x, 'a') - getNumStat(y, 'a')));
         break;
       case 'b':
-        arr.sort((x, y) => getNumStat(y, 'b') - getNumStat(x, 'b'));
+        arr.sort((x, y) => dir * (getNumStat(x, 'b') - getNumStat(y, 'b')));
         break;
       case 'd':
-        arr.sort((x, y) => getNumStat(y, 'd') - getNumStat(x, 'd'));
+        arr.sort((x, y) => dir * (getNumStat(x, 'd') - getNumStat(y, 'd')));
         break;
       case 'f':
-        arr.sort((x, y) => getNumStat(y, 'f') - getNumStat(x, 'f'));
+        arr.sort((x, y) => dir * (getNumStat(x, 'f') - getNumStat(y, 'f')));
         break;
       case 'k':
-        arr.sort((x, y) => getKValue(y) - getKValue(x));
+        arr.sort((x, y) => dir * (getKValue(x) - getKValue(y)));
         break;
       case 'name':
       default:
-        arr.sort((x, y) => (x.name || '').localeCompare(y.name || ''));
+        arr.sort((x, y) =>
+          dir === 1
+            ? (x.name || '').localeCompare(y.name || '')
+            : (y.name || '').localeCompare(x.name || '')
+        );
         break;
     }
     return arr;
@@ -399,10 +472,25 @@
     renderResults(sorted, qraw.trim());
   }
 
+  // --- event wiring ---
   searchInput.addEventListener('input', updateResults);
 
   sortSelect.addEventListener('change', () => {
-    currentSort = sortSelect.value;
+    currentSortKey = sortSelect.value;
+    updateResults();
+  });
+
+  sortDirDesc.addEventListener('click', () => {
+    currentSortDir = 'desc';
+    sortDirDesc.classList.add('active');
+    sortDirAsc.classList.remove('active');
+    updateResults();
+  });
+
+  sortDirAsc.addEventListener('click', () => {
+    currentSortDir = 'asc';
+    sortDirAsc.classList.add('active');
+    sortDirDesc.classList.remove('active');
     updateResults();
   });
 
@@ -427,7 +515,7 @@
     .then(data => {
       DRINKS = normalizeDrinks(data);
       renderQuickPicks(DRINKS);
-      updateResults(); // initial render sorted by name
+      updateResults(); // initial render
     })
     .catch(err => {
       console.error(err);
